@@ -3,15 +3,16 @@ import mercadopago = require("mercadopago")
 import jwt from 'jsonwebtoken';
 
 import { transporter } from './configEmail';
+import { listProductsController } from './listProductsController';
+import { stringify } from 'uuid';
+import { CartProduct } from '../../../jolie_jolie_front_new/src/app/models/CartProduct';
+import { Product } from '../models/product';
 
 
 class Paymentontroller {
-
-
     public async createOrder(req: Request, res: Response) {
-
+        let {carrito}=req.body
         const mercadopagoAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-
         if (!mercadopagoAccessToken) {
             console.error('La variable de entorno MERCADOPAGO_ACCESS_TOKEN no está definida.');
             process.exit(1);
@@ -49,24 +50,20 @@ class Paymentontroller {
             console.error('Las variables de entorno TOKEN_SECRET_KEY1 o TOKEN_SECRET_KEY2 no están definidas.');
             process.exit(1);
         }
+        var html:String=this.carritoToString(carrito);
 
         const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
-
-
+        
         let info = await transporter.sendMail({
             from: '"Jolie Jolie 🛍️"',
             to: payload.correo,
             subject: "Compra en la tienda JOLIE JOLIE 💰",
             html: ' <h2>Compra exitosa</h2>' +
-                '<p>Estimado usuario,</p>' +
-                '<p>Hemos recibido una solicitud de compra y el estado fue exitosa.</p>' +
-                '<p><strong>Compraste:</strong></p>' +
-                '<img src="' + result.body.items[0].picture_url + '"  alt="imagen del producto" width="346.17" height="346.17">' +
-                '<p><strong>Nombre del producto: </strong>' + result.body.items[0].title + ' </p>' +
-                '<p><strong>Cantidad: </strong>' + result.body.items[0].quantity + ' </p>' +
-                '<p><strong>Precio: </strong> $' + result.body.items[0].unit_price + ' </p>' +
-                '<p>Muchas gracias por tu compra</p>' +
-                '<p><strong>El equipo de JOLIE JOLIE</strong></p>',
+            '<p>Estimado usuario,</p>' +
+            '<p>Hemos recibido una solicitud de compra y el estado fue exitosa.</p>' +
+            '<p><strong>Compraste:</strong></p><br>' +html+
+            '<br><p>Muchas gracias por tu compra</p>' +
+            '<p><strong>El equipo de JOLIE JOLIE</strong></p>',
         });
 
 
@@ -88,6 +85,17 @@ class Paymentontroller {
         }
         res.sendStatus(204)
 
+    }
+
+    public  carritoToString(carrito:any[]):String{
+        var html=""
+        for (let i = 0; i < carrito.length; i++) {
+            html+='<div><img src="' + carrito[i].imagen + '"  alt="imagen del producto" width="346.17" height="346.17">' +
+            '<p><strong>Nombre del producto: </strong>' + carrito[i].nombre_producto + ' </p>' +
+            '<p><strong>Cantidad: </strong>' + carrito[0].cantidad + ' </p>' +
+            '<p><strong>Precio: </strong> $' + carrito[0].precio + ' </p></div>' 
+        }
+        return html
     }
 
 

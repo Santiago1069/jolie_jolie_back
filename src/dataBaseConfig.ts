@@ -1,10 +1,10 @@
 import oracledb from 'oracledb';
-require('dotenv').config();
+require('dotenv').config;
 
 const connectionConfig: oracledb.ConnectionAttributes = {
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  connectString: process.env.DATABASE_CONNECT,
+  user: "JOLIE_JOLIE",
+  password: "JOLIE_JOLIE_PASSWORD",
+  connectString: "localhost:1521/xe",
 };
 
 export async function connect() {

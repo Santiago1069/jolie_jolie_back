@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-require('dotenv').config();
+require('dotenv').config;
 
 
 
@@ -16,8 +16,8 @@ class ValidateToken {
                 const bearer_token = header_token!.slice(7);
 
                 //estas dos variables deben de ir en el archivo .env
-                const secret_key1 = process.env.TOKEN_SECRET_KEY1;
-                const secret_key2 = process.env.TOKEN_SECRET_KEY2;
+                const secret_key1 = "ZYElJo_60K$98b[y$dgr4EQ[l";
+                const secret_key2 = "i0G^OV~oaHnWZw$wXNF}2hJ.P";
 
                 if (!secret_key1 || !secret_key2) {
                     console.error('Las variables de entorno TOKEN_SECRET_KEY1 o TOKEN_SECRET_KEY2 no están definidas.');
