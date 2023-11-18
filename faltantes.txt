@@ -1,0 +1,9 @@
+1. guardar productos del carrito en la base de datos
+2. listar los productos del carrito
+3.cuando se va a pagar se pueda actualizar los datos de la venta 
+4. actualizar estado de la venta
+5. reportes
+6. crud de ventas
+7. crud pedido
+8. tabla nueva en estado de venta
+9. tamaño de imagen debe ser el mismo

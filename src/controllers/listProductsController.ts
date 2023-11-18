@@ -89,30 +89,34 @@ class ListProductsController {
     }
     public async allProductscard(req: Request, res: Response) {
         const {identificacion} = req.body;
+        const carrito=await this.allProductsCardfunsion(identificacion);
+            res.json(carrito)
+    }
+    public async allProductsCardfunsion(identificacion:String) {
         const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1',[identificacion,0]);
-        const products = await query('SELECT P.* FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
-
+        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
         if (products == null || products.length == 0) {
-            res.json([]);
+            return []
         } else{
             const map_products = products.map((p) => {
                 let product : Product = {
                     id_producto: p[0],
                     nombre_producto: p[1],
                     color: p[2],
-                    precio: p[3],
+                    precio: p[10],
                     imagen: p[4],
                     descripcion_producto: p[5],
-                    cantidad: p[6],
+                    cantidad: p[9],
                     estado: p[7],
                     id_categoria: p[8]
                 }
                 return product
             });
-
-            res.json(map_products)
+            return map_products;
         }
     }
+
+
 
 }
 
