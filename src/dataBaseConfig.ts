@@ -1,4 +1,4 @@
-import oracledb from 'oracledb';
+import * as oracledb from 'oracledb';
 require('dotenv').config;
 
 const connectionConfig: oracledb.ConnectionAttributes = {

@@ -1,6 +1,6 @@
 import { Request, Response, json } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 require('dotenv').config();
 
 import { query } from '../dataBaseConfig';

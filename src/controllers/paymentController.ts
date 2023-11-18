@@ -50,8 +50,10 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "http://localhost:3000/pending"
             },
+            
             notification_url: "https://2859-179-12-183-83.ngrok.io/webhook",
         });
+        console.log(result)
 
         const header_token = req.headers['authorization']
         const token = header_token!.slice(7);
@@ -72,7 +74,7 @@ class Paymentontroller {
                 '<p><strong>Cantidad: </strong>' + carrito[0].cantidad + ' </p>' +
                 '<p><strong>Precio: </strong> $' + carrito[0].precio + ' </p></div>'
         }
-
+/* 
         let info = await transporter.sendMail({
             from: '"Jolie Jolie 🛍️"',
             to: payload.correo,
@@ -83,7 +85,7 @@ class Paymentontroller {
                 '<p><strong>Compraste:</strong></p><br>' + html +
                 '<br><p>Muchas gracias por tu compra</p>' +
                 '<p><strong>El equipo de JOLIE JOLIE</strong></p>',
-        });
+        }); */
 
 
         res.send(result.body)
@@ -98,6 +100,7 @@ class Paymentontroller {
             if (typeof paymentId === 'number') {
                 const data = await mercadopago.payment.findById(paymentId);
                 console.log(data);
+               
             }
         }
         res.sendStatus(204)
