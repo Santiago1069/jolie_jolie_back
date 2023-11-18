@@ -15,7 +15,15 @@ class ListProductsRoutes{
       
     this.router.get('/admin/products', validateToken.validate, listProductsController.all_products);
 
-    this.router.get('/products', validateToken.validate, listProductsController.allProductsActivate);
+    this.router.get('/products', listProductsController.allProductsActivate);
+
+    this.router.get('/productbyid', validateToken.validate, listProductsController.productobyid);
+
+    this.router.post('/productsCard',listProductsController.allProductscard);
+    
+    this.router.post('/productsCard/cantidad',listProductsController.allProductscard);
+
+
 
    }
    

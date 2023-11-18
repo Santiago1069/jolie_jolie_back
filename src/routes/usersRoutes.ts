@@ -19,7 +19,6 @@ class UsersRoutes {
         this.router.put('/user/:id', validateToken.validate, usersController.updateUser);
 
         this.router.get('/profiles', validateToken.validate, usersController.getProfiles);
-
         this.router.get('/documents', usersController.getTipeDocument);
         this.router.post('/validateEmail', usersController.validateEmail);
         this.router.post('/cambiarPassword', validateToken.validate, usersController.cambiarPassword )

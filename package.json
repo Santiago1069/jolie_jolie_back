@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node ./src/index.ts",
     "build": "tsc -w",
     "dev": "nodemon build/index.js"
   },
@@ -21,6 +22,8 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.3",
     "oracledb": "^6.1.0",
+    "smtp-connection": "^4.0.2",
+    "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13"
   },
