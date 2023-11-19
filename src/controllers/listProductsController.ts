@@ -116,6 +116,30 @@ class ListProductsController {
         }
     }
 
+    public async allProductsVentas() {
+        const products = await query("SELECT cp.id_compra_fk,P.*,CP.cantidad,CP.valor_unidad FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS C ON C.id_compra=CP.id_compra_fk  WHERE C.ESTADO=1");
+        if (products == null || products.length == 0) {
+            return []
+        } else{
+            const map_products = products.map((p:any) => {
+                let product  = {
+                    id_compra:p[0],
+                    id_producto: p[1],
+                    nombre_producto: p[2],
+                    color: p[3],
+                    precio: p[11],
+                    imagen: p[5],
+                    descripcion_producto: p[6],
+                    cantidad: p[10],
+                    estado: p[8],
+                    id_categoria: p[9]
+                }
+                return product
+            });
+            return map_products;
+        }
+
+    }
 
 
 }

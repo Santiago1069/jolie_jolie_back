@@ -2,9 +2,8 @@ import { Request, Response, json } from 'express';
 import bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 require('dotenv').config();
-
 import { query } from '../dataBaseConfig';
-import { User } from '../models/user';
+import User from '../models/user';
 
 
 class LoginController {

@@ -4,19 +4,24 @@ require('dotenv').config();
 import { query } from '../dataBaseConfig';
 import { Compras } from '../models/compras';
 import * as jwt  from 'jsonwebtoken';
-import { User } from '../models/user';
+import { listProductsController } from './listProductsController';
 
 
 class ListComprasController {
 
     public async compras(req: Request, res: Response) {
-
-        const compras = await query('SELECT C.*, U.NOMBRE AS NOMBRE_USUARIO, MP.DESCRIPCION_METODOPAGO AS DESCRIPCION_METODO_PAGO FROM COMPRAS C INNER JOIN USUARIOS U ON C.ID_USUARIO_FK = U.IDENTIFICACION INNER JOIN METODOS_PAGO MP ON C.ID_METODOPAGO_FK = MP.ID_METODOPAGO');
-
+       let product= await listProductsController.allProductsVentas();
+        const compras = await query('SELECT C.*, U.nombre AS NOMBRE_USUARIO, MP.DESCRIPCION_METODOPAGO AS DESCRIPCION_METODO_PAGO FROM COMPRAS C INNER JOIN USUARIOS U ON C.ID_USUARIO_FK = U.IDENTIFICACION INNER JOIN METODOS_PAGO MP ON C.ID_METODOPAGO_FK = MP.ID_METODOPAGO where c.estado=1');
         if (compras == null || compras.length == 0) {
             res.json([]);
         } else{
             const map_compras = compras.map((p:any) => {
+                var pro:any[]=[];
+                product.map((prod:any)=>{
+                    if(prod.id_compra==p[0]){
+                        pro.push(prod)
+                    }
+                })
                 let compra : Compras = {
                     id_compra: p[0],
                     fecha: p[1],
@@ -24,12 +29,12 @@ class ListComprasController {
                     estado: p[3],
                     valor_total: p[4],
                     cantidad_productos: p[5],
-                    usuario: p[9],
-                    metodopago: p[10]
+                    usuario:p[9],
+                    metodopago: p[10],
+                    producto:pro
                 }
                 return compra
             });
-
             res.json(map_compras)
         }
     }
@@ -66,18 +71,13 @@ class ListComprasController {
                     valor_total: p[4],
                     cantidad_productos: p[5],
                     usuario: p[9],
-                    metodopago: p[10]
+                    metodopago: p[10],
+                    producto:[]
                 }
                 return compra
             });
-
             res.json(map_compras)
         }
     }
-
-
-
-
-
 }
 export const listComprasController = new ListComprasController();

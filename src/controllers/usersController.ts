@@ -7,7 +7,7 @@ require('dotenv').config();
 
 
 import { query } from '../dataBaseConfig';
-import { User } from '../models/user';
+import User from '../models/user';
 import { Profile } from '../models/profile';
 import { TipeDocuments } from '../models/tipeDocuments';
 
