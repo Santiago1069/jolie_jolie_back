@@ -12,10 +12,9 @@ class ListProductsController {
 
         if (products == null || products.length == 0) {
             res.json([]);
-        } else{
-            console.log(products)
+        } else {
             const map_products = products.map((p) => {
-                let product : Product = {
+                let product: Product = {
                     id_producto: p[0],
                     nombre_producto: p[1],
                     color: p[2],
@@ -42,10 +41,10 @@ class ListProductsController {
 
         if (products == null || products.length == 0) {
             res.json([]);
-        } else{
+        } else {
             console.log(products)
             const map_products = products.map((p) => {
-                let product : Product = {
+                let product: Product = {
                     id_producto: p[0],
                     nombre_producto: p[1],
                     color: p[2],
@@ -60,6 +59,30 @@ class ListProductsController {
             });
 
             res.json(map_products)
+        }
+    }
+
+    public async allProductsCardfunsion(identificacion: String) {
+        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', ['1212212121', 0]);
+        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
+        if (products == null || products.length == 0) {
+            return []
+        } else {
+            const map_products = products.map((p) => {
+                let product: Product = {
+                    id_producto: p[0],
+                    nombre_producto: p[1],
+                    color: p[2],
+                    precio: p[10],
+                    imagen: p[4],
+                    descripcion_producto: p[5],
+                    cantidad: p[9],
+                    estado: p[7],
+                    id_categoria: p[8]
+                }
+                return product
+            });
+            return map_products;
         }
     }
 
