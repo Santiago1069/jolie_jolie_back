@@ -42,7 +42,6 @@ class Paymentontroller {
         mercadopago.configure({
             access_token: mercadopagoAccessToken
         });
-        console.log(item);
         const result = await mercadopago.preferences.create({
             items: item,
             back_urls: {
@@ -53,7 +52,6 @@ class Paymentontroller {
             
             notification_url: "https://2859-179-12-183-83.ngrok.io/webhook",
         });
-        console.log(result)
 
         const header_token = req.headers['authorization']
         const token = header_token!.slice(7);
@@ -99,7 +97,6 @@ class Paymentontroller {
        if (payment.type === "payment") {
             if (typeof paymentId === 'number') {
                 const data = await mercadopago.payment.findById(paymentId);
-                console.log(data);
                
             }
         }

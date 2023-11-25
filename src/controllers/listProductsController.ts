@@ -13,7 +13,6 @@ class ListProductsController {
         if (products == null || products.length == 0) {
             res.json([]);
         } else{
-            console.log(products)
             const map_products = products.map((p) => {
                 let product : Product = {
                     id_producto: p[0],
@@ -44,7 +43,6 @@ class ListProductsController {
             res.json([]);
         } else{
             const map_products = products.map((p:any) => {
-                console.log("--------------------------------------------------",p)
                 let product : Product = {
                     id_producto: p[0],
                     nombre_producto: p[1],
