@@ -20,7 +20,7 @@ class PaymentRoutes {
         this.router.get('/pending');
 
         this.router.post('/createCompra', paymentontroller.createCompra);
-        this.router.post('/createComprasProduct', paymentontroller.createComprasProduct);
+        this.router.post('/createComprasProduct/:id', paymentontroller.createComprasProduct);
     }
 
 }

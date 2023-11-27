@@ -10,24 +10,12 @@ import { uuid } from 'uuidv4';
 
 class Paymentontroller {
 
-    public static myUUID: string = uuid();
-    public static uuidWithoutLetters: string = Paymentontroller.myUUID.replace(/\D/g, '');
 
     public async createOrder(req: Request, res: Response) {
 
-        const header_token = req.headers['authorization']
-        const token = header_token!.slice(7);
+        const payload = Paymentontroller.getPayloadToken(req);
 
-        const secret_key1 = process.env.TOKEN_SECRET_KEY1;
-        const secret_key2 = process.env.TOKEN_SECRET_KEY2;
-
-        if (!secret_key1 || !secret_key2) {
-            console.error('Las variables de entorno TOKEN_SECRET_KEY1 o TOKEN_SECRET_KEY2 no están definidas.');
-            process.exit(1);
-        }
-        const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
-
-        var carrito = await listProductsController.allProductsCardfunsion(payload.identificacion);
+        var carrito = await listProductsController.allProductsCardfunsion(payload!.identificacion);
 
         var item: Array<any> = [];
         if (!carrito) {
@@ -61,13 +49,23 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "http://localhost:3000/pending"
             },
-            notification_url: "https://0dc1-206-84-81-108.ngrok-free.app/webhook",
+            notification_url: "https://1196-38-156-230-108.ngrok-free.app/webhook",
+            payer: {
+                email: payload!.correo,
+                identification: {
+                    type: "CC",
+                    number: payload!.identificacion
+                }
+
+            },
         });
 
+
+        console.log('result.body ---- createOrder')
+        console.log(result.body)
         res.send(result.body)
     }
     public async getWebhook(req: Request, res: Response) {
-
 
         try {
             const payment = req.query;
@@ -100,7 +98,7 @@ class Paymentontroller {
 
                         let info = await transporter.sendMail({
                             from: '"Jolie Jolie 🛍️"',
-                            to: 'santiago_sandoval23201@elpoli.edu.co',
+                            to: /* data.body.payer.email */ 'santiago_sandoval23201@elpoli.edu.co',
                             subject: "Compra en la tienda JOLIE JOLIE 💰",
                             html: '<h2 class="display-4">Compra exitosa</h2>' +
                                 '<p class="lead">Estimado usuario,</p>' +
@@ -110,12 +108,12 @@ class Paymentontroller {
                                 '<p class="lead"><strong>El equipo de JOLIE JOLIE</strong></p>',
                         });
 
-                        console.log('data.body');
+                        console.log('data.body ----- getWebhook');
                         console.log(data.body);
 
                         const createCompra = await query(
                             `UPDATE COMPRAS SET ESTADO = :0, METODOPAGO = :1 WHERE ID_USUARIO_FK = :2`,
-                            [1, data.body.payment_method.type, '1212212121'],
+                            [1, data.body.payment_method.type, data.body.payer.identification.number],
                         );
                     }
 
@@ -152,7 +150,7 @@ class Paymentontroller {
 
 
     public async createCompra(req: Request, res: Response) {
-        let id_compra = parseInt(Paymentontroller.uuidWithoutLetters, 10);
+        let id_compra = parseInt(Paymentontroller.generarNuevoIdCompra(), 10);
         const fechaOriginal = new Date();
         const año = fechaOriginal.getFullYear();
         const mes = (fechaOriginal.getMonth() + 1).toString().padStart(2, '0');
@@ -184,7 +182,7 @@ class Paymentontroller {
     }
 
     public async createComprasProduct(req: Request, res: Response) {
-        let id_compra = parseInt(Paymentontroller.uuidWithoutLetters, 10);
+        const id_compra = req.params.id;
         for (let i = 0; i < req.body.length; i++) {
             let id_compra_productos = Math.floor(Math.random() * 2000000)
             let valor_total = req.body[i].quantityProducts * req.body[i].price;
@@ -201,11 +199,37 @@ class Paymentontroller {
 
     }
 
-    static generarNuevoIdCompra(): number {
-        const numeroAleatorio = Math.random();
-        const idCompra = Math.floor(numeroAleatorio * 1000000);
-        return idCompra;
+    private static generarNuevoIdCompra(): string {
+        const myUUID: string = uuid();
+        const uuidWithoutLetters: string = myUUID.replace(/\D/g, '');
+        return uuidWithoutLetters;
     }
+
+    public static getPayloadToken(req: Request): any {
+
+        const header_token = req.headers['authorization'];
+
+        if (header_token != undefined && header_token.startsWith('Bearer ')) {
+            const token = header_token!.slice(7);
+
+            const secret_key1 = process.env.TOKEN_SECRET_KEY1;
+            const secret_key2 = process.env.TOKEN_SECRET_KEY2;
+
+            if (!secret_key1 || !secret_key2) {
+                console.error('Las variables de entorno TOKEN_SECRET_KEY1 o TOKEN_SECRET_KEY2 no están definidas.');
+                process.exit(1);
+            }
+
+            try {
+                const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
+                return payload;
+            } catch (error) {
+                console.error('Error al verificar el token:', error);
+                return null;
+            }
+        }
+    }
+
 
 
 }

@@ -63,7 +63,8 @@ class ListProductsController {
     }
 
     public async allProductsCardfunsion(identificacion: String) {
-        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', ['1212212121', 0]);
+        await this.esperarUnSegundoAsync();
+        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', [identificacion, 0]);
         const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
         if (products == null || products.length == 0) {
             return []
@@ -84,6 +85,14 @@ class ListProductsController {
             });
             return map_products;
         }
+    }
+
+    public async esperarUnSegundoAsync(): Promise<void> {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 1000);
+        });
     }
 
 }

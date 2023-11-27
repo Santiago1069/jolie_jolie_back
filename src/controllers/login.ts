@@ -74,7 +74,8 @@ class LoginController {
             }
 
             const token = jwt.sign({
-                correo: correo
+                correo: correo,
+                identificacion: user_existe![0][0],
             }, secret_key1|| secret_key1)
 
             res.json(token);
