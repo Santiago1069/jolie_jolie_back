@@ -49,14 +49,13 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "http://localhost:3000/pending"
             },
-            notification_url: "https://1196-38-156-230-108.ngrok-free.app/webhook",
+            notification_url: "https://3f83-38-156-230-108.ngrok-free.app/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
                     type: "CC",
                     number: payload!.identificacion
                 }
-
             },
         });
 
@@ -78,6 +77,12 @@ class Paymentontroller {
                     const data = await mercadopago.payment.findById(numericDataId);
 
                     if (data.body.status === "approved") {
+
+                        const createCompra = await query(
+                            `UPDATE COMPRAS SET ESTADO = :0, METODOPAGO = :1 WHERE ID_USUARIO_FK = :2`,
+                            [1, data.body.payment_method.type, data.body.payer.identification.number],
+                        );
+
                         var html = "";
                         for (let i = 0; i < data.response.additional_info.items.length; i++) {
                             html += '<div class="card mb-3" style="max-width: 540px;">' +
@@ -111,10 +116,6 @@ class Paymentontroller {
                         console.log('data.body ----- getWebhook');
                         console.log(data.body);
 
-                        const createCompra = await query(
-                            `UPDATE COMPRAS SET ESTADO = :0, METODOPAGO = :1 WHERE ID_USUARIO_FK = :2`,
-                            [1, data.body.payment_method.type, data.body.payer.identification.number],
-                        );
                     }
 
                 } else {
@@ -150,7 +151,8 @@ class Paymentontroller {
 
 
     public async createCompra(req: Request, res: Response) {
-        let id_compra = parseInt(Paymentontroller.generarNuevoIdCompra(), 10);
+        let id_compra = Paymentontroller.generarNuevoIdCompra();
+        id_compra = id_compra.replace(/\./g, '');
         const fechaOriginal = new Date();
         const año = fechaOriginal.getFullYear();
         const mes = (fechaOriginal.getMonth() + 1).toString().padStart(2, '0');
