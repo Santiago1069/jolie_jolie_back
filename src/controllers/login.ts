@@ -41,20 +41,19 @@ class LoginController {
         const { correo, password } = req.body;
 
         //Validamo si el usuario existe en la base de datos
-        const user_existe = await query('SELECT * FROM USUARIOS WHERE CORREO = ?',[correo]);
-
-        if (user_existe == null || user_existe.length === 0) {
+        const user_existe:any = await query('SELECT * FROM USUARIOS WHERE CORREO = ?',[correo]);
+        console.log(user_existe.length,correo,password)
+        if (user_existe[0]['IDENTIFICACION'] == undefined || user_existe.length < 1) {
             res.status(400).json({
                 msg: `El correo o la contraseña son incorrectas`
             });
-
             return
         }
 
 
         // Validamos la contraseña
         const validar_password = await bcrypt.compare(password, user_existe![0]['PASSWORD'])
-
+        console.log( user_existe![0]['PASSWORD'])
         if (!validar_password) {
             return res.status(400).json({
                 msg: `El correo o la contraseña son incorrectas`
@@ -66,14 +65,14 @@ class LoginController {
 
 
         try {
-            if (!secret_key1|| !secret_key1) {
+            if (!secret_key1 || !secret_key2) {
                 console.error('Las variables de entorno TOKEN_SECRET_KEY1 o TOKEN_SECRET_KEY2 no están definidas.');
                 process.exit(1);
             }
 
             const token = jwt.sign({
                 correo: correo,
-                identificacion: user_existe![0][0],
+                identificacion: user_existe![0]['IDENTIFIACION'],
             }, secret_key1|| secret_key1)
 
             res.json(token);

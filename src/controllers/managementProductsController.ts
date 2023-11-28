@@ -13,7 +13,7 @@ class ManagementProductsController {
 
         const { id } = req.params;
 
-        const select_one_product = await query('SELECT PRODUCTOS.ID_PRODUCTO, PRODUCTOS.NOMBRE_PRODUCTO, PRODUCTOS.COLOR, PRODUCTOS.PRECIO, PRODUCTOS.IMAGEN, PRODUCTOS.DESCRIPCION_PRODUCTO, PRODUCTOS.CANTIDAD, PRODUCTOS.ESTADO, PRODUCTOS.ID_CATEGORIA_FK, CATEGORIAS.DESCRIPCION_CATEGORIA FROM PRODUCTOS INNER JOIN CATEGORIAS ON PRODUCTOS.ID_CATEGORIA_FK = CATEGORIAS.ID_CATEGORIA  WHERE ID_PRODUCTO = ?', [id]);
+        const select_one_product = await query('SELECT P.ID_PRODUCTO, P.NOMBRE_PRODUCTO, P.COLOR, P.PRECIO, P.IMAGEN, P.DESCRIPCION_PRODUCTO, P.CANTIDAD, P.ESTADO_PRODUCTO, P.ID_CATEGORIA_FK, C.DESCRIPCION_CATEGORIA FROM PRODUCTOS P INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA_FK = C.ID_CATEGORIA  WHERE P.ID_PRODUCTO = ?', [id]);
 
         if (select_one_product == null || select_one_product.length === 0 || select_one_product == undefined) {
             res.status(400).json({
@@ -37,18 +37,12 @@ class ManagementProductsController {
 
             res.json(product)
         }
-
-
-
     }
 
 
     public async createProduct(req: Request, res: Response) {
 
         const create_one_product = await query('INSERT INTO PRODUCTOS ( nombre_producto, color, precio, imagen, descripcion_producto, cantidad, estado, id_categoria_fk) VALUES (?,?,?,?,?,?,?,?) ', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria]);
-
-
-
         res.json({
             nombre_producto: req.body.nombre_producto,
             color: req.body.color,

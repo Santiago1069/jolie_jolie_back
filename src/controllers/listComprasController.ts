@@ -9,7 +9,7 @@ class ListComprasController {
 
     public async compras(req: Request, res: Response) {
        let product= await listProductsController.allProductsVentas();
-        const compras = await query('SELECT C.*, U.nombre AS NOMBRE_USUARIO, MP.DESCRIPCION_METODOPAGO AS DESCRIPCION_METODO_PAGO FROM COMPRAS C INNER JOIN USUARIOS U ON C.ID_USUARIO_FK = U.IDENTIFICACION INNER JOIN METODOS_PAGO MP ON C.ID_METODOPAGO_FK = MP.ID_METODOPAGO where C.ESTADO_COMPRAS=1');
+        const compras = await query('SELECT C.*, U.nombre AS NOMBRE_USUARIO FROM COMPRAS C INNER JOIN USUARIOS U ON C.ID_USUARIO_FK = U.IDENTIFICACION  where C.ESTADO_COMPRAS=1');
         if (compras == null || compras.length == 0) {
             res.json([]);
         } else{
@@ -27,7 +27,7 @@ class ListComprasController {
                     estado: p['ESTADO_COMPRAS'],
                     valor_total: p['VALOR_TOTAL'],
                     usuario:p['NOMBRE_USUARIO'],
-                    metodopago: p['DESCRIPCION_METODO_PAGO'],
+                    metodopago: p['METODOPAGO'],
                     producto:pro
                 }
                 return compra
@@ -51,28 +51,27 @@ class ListComprasController {
         }
         const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
 
-        const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = ?', [payload['correo']]);
+        const user_db = await query('SELECT IDENTIFICACION FROM USUARIOS WHERE CORREO = ?', [payload['correo']]);
 
 
-        const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.*, U.IDENTIFICACION FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS  C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE ID_USUARIO_FK = ?', [user_db![0][0]]);
-        if (compras == null || compras.length == 0) {
+        const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.* FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE U.IDENTIFICACION= ?', [user_db![0]['IDENTIFICACION']]);
+        if (compras == null || compras.length == 0 || user_db==null) {
             res.json([]);
         } else {
             const map_compras = compras.map((p) => {
                 let compra: any = {
-                    id_compras_productos: p[0],
-                    id_compra: p[1],
-                    id_producto_fk: p[2],
-                    cantidad: p[3],
-                    valor_unidad: p[4],
-                    valor_total: p[5],
-                    nombre_producto: p[6],
-                    imagen: p[7],
-                    fecha: p[9],
-                    direccion: p[10],
-                    estado: p[11],
-                    metodo_pago: p[16],
-                    identificacion: p[17]
+                    id_compras_productos: p['ID_COMPRAS_PRODUCTOS'],
+                    id_compra: p['ID_COMPRA_FK'],
+                    id_producto_fk: p['ID_PRODUCTO_FK'],
+                    valor_unidad: p['VALOR_UNIDAD'],
+                    valor_total: p['VALOR_TOTAL'],
+                    nombre_producto: p['NOMBRE_PRODUCTO'],
+                    imagen: p['IMAGEN'],
+                    fecha: p['FECHA'],
+                    direccion: p['DIRECCION'],
+                    estado: p['ESTADO_COMPRAS'],
+                    metodo_pago: p['METODOPAGO'],
+                    identificacion: user_db[0]['IDENTIFICACION']
                 }
                 return compra
             });

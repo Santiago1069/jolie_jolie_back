@@ -89,29 +89,6 @@ class ListProductsController {
         const carrito=await this.allProductsCardfunsion(identificacion);
             res.json(carrito)
     }
-    public async allProductsCardfunsion(identificacion:String) {
-        const venta = await query('select id_compra from compras where id_usuario_fk= ? and estado=?',[identificacion,0]);
-        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = ? ', [venta![0][0]]);
-        if (products == null || products.length == 0) {
-            return []
-        } else{
-            const map_products = products.map((p:any) => {
-                let product : Product = {
-                    id_producto: p['ID_PRODUCTO'],
-                    nombre_producto: p['NOMBRE_PRODUCTO'],
-                    color: p['COLOR'],
-                    precio: p['PRECIO'],
-                    imagen: p['IMAGEN'],
-                    descripcion_producto: p['DESCRIPCION_PRODUCTO'],
-                    cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
-                    id_categoria: p['ID_CATEGORIA_FK']
-                }
-                return product
-            });
-            return map_products;
-        }
-    }
 
     public async allProductsVentas() {
         const products = await query("SELECT CP.ID_COMPRA_FK,P.*,CP.cantidad AS CANTIDAD_VENDIDA,CP.valor_unidad AS VALOR_UNIDAD FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS C ON C.id_compra=CP.id_compra_fk  WHERE C.ESTADO_COMPRAS=1");
@@ -141,26 +118,33 @@ class ListProductsController {
 
     public async allProductsCardfunsion(identificacion: String) {
         await this.esperarUnSegundoAsync();
-        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', [identificacion, 0]);
-        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
-        if (products == null || products.length == 0) {
-            return []
-        } else {
-            const map_products = products.map((p) => {
-                let product: Product = {
-                    id_producto: p[0],
-                    nombre_producto: p[1],
-                    color: p[2],
-                    precio: p[10],
-                    imagen: p[4],
-                    descripcion_producto: p[5],
-                    cantidad: p[9],
-                    estado: p[7],
-                    id_categoria: p[8]
-                }
-                return product
-            });
-            return map_products;
+        var map_products;
+        const venta = await query('select id_compra from compras where id_usuario_fk= ? and estado=?', [identificacion, 0]);
+        if(!venta){
+            console.log('no existe venta')
+        }else{
+            console.log(venta)
+            const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = ? ', [venta![0]['id_compra']]);
+            if (products == null || products.length == 0) {
+                return []
+            } else {
+                map_products = products.map((p) => {
+                    let product: Product = {
+                        id_producto: p['ID_PRODUCTO'],
+                        nombre_producto: p['NOMBRE_PRODUCTO'],
+                        color: p['COLOR'],
+                        precio: p['PRECIO'],
+                        imagen: p['IMAGEN'],
+                        descripcion_producto: p['DESCRIPCION_PRODUCTO'],
+                        cantidad: p['CANTIDAD'],
+                        estado: p['ESTADO_PRODUCTO'],
+                        id_categoria: p['ID_CATEGORIA_FK']
+                    }
+                    return product
+                });
+           
+        }
+             return map_products;
         }
     }
 
