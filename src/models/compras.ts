@@ -8,5 +8,5 @@ export interface Compras {
     valor_total: number;
     usuario: string;
     metodopago: string;
-    producto:any[]
-}
+    producto?:any[]
+  }

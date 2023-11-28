@@ -36,7 +36,6 @@ class ListProductsController {
     public async allProductsActivate(req: Request, res: Response) {
 
         const estado = 'Activo';
-
         const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO_PRODUCTO = ?', [1]);
 
         if (products == null || products.length == 0) {
@@ -139,6 +138,39 @@ class ListProductsController {
 
     }
 
+
+    public async allProductsCardfunsion(identificacion: String) {
+        await this.esperarUnSegundoAsync();
+        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', [identificacion, 0]);
+        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
+        if (products == null || products.length == 0) {
+            return []
+        } else {
+            const map_products = products.map((p) => {
+                let product: Product = {
+                    id_producto: p[0],
+                    nombre_producto: p[1],
+                    color: p[2],
+                    precio: p[10],
+                    imagen: p[4],
+                    descripcion_producto: p[5],
+                    cantidad: p[9],
+                    estado: p[7],
+                    id_categoria: p[8]
+                }
+                return product
+            });
+            return map_products;
+        }
+    }
+
+    public async esperarUnSegundoAsync(): Promise<void> {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 1000);
+        });
+    }
 
 }
 

@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 require('dotenv').config();
-
 import { query } from '../dataBaseConfigMYSQL';
 import { Compras } from '../models/compras';
-import * as jwt  from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { listProductsController } from './listProductsController';
-
 
 class ListComprasController {
 
@@ -55,22 +53,26 @@ class ListComprasController {
 
         const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = ?', [payload['correo']]);
 
-        const compras = await query('SELECT C.*, U.NOMBRE AS NOMBRE_USUARIO, MP.DESCRIPCION_METODOPAGO AS DESCRIPCION_METODO_PAGO FROM COMPRAS C INNER JOIN USUARIOS U ON C.ID_USUARIO_FK = U.IDENTIFICACION  INNER JOIN METODOS_PAGO MP ON C.ID_METODOPAGO_FK = MP.ID_METODOPAGO WHERE ID_USUARIO_FK = ?', [user_db![0][0]]);
 
-
+        const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.*, U.IDENTIFICACION FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS  C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE ID_USUARIO_FK = ?', [user_db![0][0]]);
         if (compras == null || compras.length == 0) {
             res.json([]);
-        } else{
-            const map_compras = compras.map((p:any) => {
-                let compra : Compras = {
-                    id_compra: p['ID_COMPRA'],
-                    fecha: p['FECHA'],
-                    direccion: p['DIRECCION'],
-                    estado: p['ESTADO_COMPRAs'],
-                    valor_total: p['VALOR_TOTAL'],
-                    usuario: p['NOMBRE_USUARIO'],
-                    metodopago: p['DESCRIPCION_METODOPAGO'],
-                    producto:[]
+        } else {
+            const map_compras = compras.map((p) => {
+                let compra: any = {
+                    id_compras_productos: p[0],
+                    id_compra: p[1],
+                    id_producto_fk: p[2],
+                    cantidad: p[3],
+                    valor_unidad: p[4],
+                    valor_total: p[5],
+                    nombre_producto: p[6],
+                    imagen: p[7],
+                    fecha: p[9],
+                    direccion: p[10],
+                    estado: p[11],
+                    metodo_pago: p[16],
+                    identificacion: p[17]
                 }
                 return compra
             });
