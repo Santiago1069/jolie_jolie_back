@@ -1,22 +1,19 @@
 import { Request, Response } from 'express';
 import mercadopago = require("mercadopago")
 import jwt from 'jsonwebtoken';
-
 import { transporter } from './configEmail';
-import { query } from '../dataBaseConfig';
 import { listProductsController } from './listProductsController';
+import { stringify } from 'uuid';
+import { Product } from '../models/product';
+import { query } from '../dataBaseConfig';
 import { uuid } from 'uuidv4';
 
 
+
 class Paymentontroller {
-
-
     public async createOrder(req: Request, res: Response) {
-
         const payload = Paymentontroller.getPayloadToken(req);
-
         var carrito = await listProductsController.allProductsCardfunsion(payload!.identificacion);
-
         var item: Array<any> = [];
         if (!carrito) {
             console.error('El carrito es undefined.');
@@ -58,8 +55,6 @@ class Paymentontroller {
                 }
             },
         });
-
-
         console.log('result.body ---- createOrder')
         console.log(result.body)
         res.send(result.body)
@@ -124,13 +119,11 @@ class Paymentontroller {
             } else {
                 console.error("La consulta no tiene el formato esperado.");
             }
-
-
-
             res.sendStatus(204);
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Something goes wrong" });
+
         }
 
     }
