@@ -97,7 +97,6 @@ class Paymentontroller {
        if (payment.type === "payment") {
             if (typeof paymentId === 'number') {
                 const data = await mercadopago.payment.findById(paymentId);
-               
             }
         }
         res.sendStatus(204)
