@@ -11,7 +11,7 @@ class PaymentRoutes {
 
     config(): void {
 
-        this.router.get('/payment', paymentontroller.createOrder);
+        this.router.post('/payment', paymentontroller.createOrder);
         this.router.post('/webhook', paymentontroller.getWebhook);
 
 
@@ -19,6 +19,8 @@ class PaymentRoutes {
         this.router.get('/failure', paymentontroller.failureCompra);
         this.router.get('/pending');
 
+        this.router.post('/createCompra', paymentontroller.createCompra);
+        this.router.post('/createComprasProduct/:id', paymentontroller.createComprasProduct);
     }
 
 }

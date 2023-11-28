@@ -1,3 +1,4 @@
+
 export interface Compras {
 
     id_compra: number;
@@ -5,7 +6,7 @@ export interface Compras {
     direccion: string;
     estado: string;
     valor_total: number;
-    cantidad_productos: number;
     usuario: string;
     metodopago: string;
-}
+    producto?:any[]
+  }

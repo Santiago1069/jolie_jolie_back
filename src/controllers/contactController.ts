@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 require('dotenv').config();
 
 
-import { query } from '../dataBaseConfig';
+import { query } from '../dataBaseConfigMYSQL';
 
 
 
@@ -27,11 +27,11 @@ class ContactController {
 
         const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
 
-        const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = :0', [payload.correo]);
+        const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = ?', [payload.correo]);
 
-        const id_user = user_db![0][0];
+        const id_user = user_db![0]['IDENTIFICACION'];
 
-        const mensajeContactanos = await query('INSERT INTO CONTACTANOS (ASUNTO, MENSAJE, USER_ID) VALUES (:0, :1, :2)', [req.body.asunto, req.body.mensaje, id_user]);
+        const mensajeContactanos = await query('INSERT INTO CONTACTANOS (ASUNTO, MENSAJE, USER_ID) VALUES (?, ?, ?)', [req.body.asunto, req.body.mensaje, id_user]);
 
         res.status(200).json({});
 
@@ -47,11 +47,11 @@ class ContactController {
         } else {
             const map_mensajes = mensajes.map((p) => {
                 let user: any = {
-                    nombre: p[0],
-                    correo: p[1],
-                    celular: p[2],
-                    asunto: p[3],
-                    mensaje: p[4]
+                    nombre: p['NOMBRE'],
+                    correo: p['CORREO'],
+                    celular: p['CELULAR'],
+                    asunto: p['ASUNTO'],
+                    mensaje: p['MENSAJE']
                 }
                 return user
             });
