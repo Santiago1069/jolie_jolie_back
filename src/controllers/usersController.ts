@@ -141,7 +141,6 @@ class UsersController {
         if (documents == null || documents.length == 0) {
             res.json([]);
         } else {
-            console.log(documents);
             const map_documents = documents.map((p) => {
                 let document: TipeDocuments = {
                     id_tipo_documento: p['ID_TIPO_DOCUMENTO'],

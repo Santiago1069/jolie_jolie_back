@@ -54,25 +54,25 @@ class ListComprasController {
         const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = ?', [payload['correo']]);
 
 
-        const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.*, U.IDENTIFICACION FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS  C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE ID_USUARIO_FK = ?', [user_db![0][0]]);
+        const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.*, U.IDENTIFICACION FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS  C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE ID_USUARIO_FK = ?', [user_db![0]['IDENTIFICACION']]);
         if (compras == null || compras.length == 0) {
             res.json([]);
         } else {
             const map_compras = compras.map((p) => {
                 let compra: any = {
-                    id_compras_productos: p[0],
-                    id_compra: p[1],
-                    id_producto_fk: p[2],
-                    cantidad: p[3],
-                    valor_unidad: p[4],
-                    valor_total: p[5],
-                    nombre_producto: p[6],
-                    imagen: p[7],
-                    fecha: p[9],
-                    direccion: p[10],
-                    estado: p[11],
-                    metodo_pago: p[16],
-                    identificacion: p[17]
+                    id_compras_productos: p['ID_COMPRAS_PRODUCTOS'],
+                    id_compra: p['ID_COMPRA'],
+                    id_producto_fk: p['ID_PRODUCTO_FK'],
+                    cantidad: p['CANTIDAD'],
+                    valor_unidad: p['VALOR_UNIDAD'],
+                    valor_total: p['VALOR_TOTAL'],
+                    nombre_producto: p['NOMBRE_PRODUCTO'],
+                    imagen: p['IMAGEN'],
+                    fecha: p['FECHA'],
+                    direccion: p['DIRECCION'],
+                    estado: p['ESTADO_COMPRAS'],
+                    metodo_pago: p['METODOPAGO'],
+                    identificacion: p['IDENTIFICACION']
                 }
                 return compra
             });
