@@ -25,6 +25,7 @@
     "oracledb": "^6.1.0",
     "smtp-connection": "^4.0.2",
     "ts-node": "^10.9.1",
+    "typescript": "^5.3.2",
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13"
   },
