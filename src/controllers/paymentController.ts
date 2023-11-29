@@ -37,6 +37,10 @@ class Paymentontroller {
         mercadopago.configure({
             access_token: mercadopagoAccessToken
         });
+
+        console.log('item');
+        console.log(item);
+
         const result = await mercadopago.preferences.create({
             items: item,
             back_urls: {
@@ -44,7 +48,7 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "http://localhost:3000/pending"
             },
-            notification_url: "https://d731-179-50-91-34.ngrok-free.app/webhook",
+            notification_url: "https://0ca3-38-156-230-108.ngrok-free.app/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
