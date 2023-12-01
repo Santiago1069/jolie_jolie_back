@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { transporter } from './configEmail';
 import { uuid } from 'uuidv4';
 import { query } from '../dataBaseConfigMYSQL';
+import { listProductsController } from './listProductsController';
 
 class Paymentontroller {
     public async createOrder(req: Request, res: Response) {
@@ -17,11 +18,11 @@ class Paymentontroller {
         } else {
             for (let i = 0; i < carrito.length; i++) {
                 item.push({
-                    title: carrito[i].nombre_producto,
-                    unit_price: carrito[i].precio,
+                    title: carrito[i]['nombre_producto'],
+                    unit_price: carrito[i]['precio'],
                     currency_id: "COP",
-                    quantity: carrito[i].cantidad,
-                    picture_url: carrito[i].imagen
+                    quantity: carrito[i]['cantidad'],
+                    picture_url: carrito[i]['imagen']
                 })
 
             }

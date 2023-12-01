@@ -24,7 +24,6 @@
     "nodemailer": "^6.9.3",
     "oracledb": "^6.1.0",
     "smtp-connection": "^4.0.2",
-    "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13"
   },
@@ -38,6 +37,7 @@
     "@types/morgan": "^1.9.5",
     "@types/nodemailer": "^6.4.8",
     "@types/oracledb": "^5.3.1",
-    "nodemon": "^2.0.21"
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1"
   }
 }
