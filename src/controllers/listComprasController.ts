@@ -53,14 +53,12 @@ class ListComprasController {
 
         const user_db = await query('SELECT IDENTIFICACION FROM USUARIOS WHERE CORREO = ?', [payload['correo']]);
 
-
         const compras = await query('SELECT CP.*, P.NOMBRE_PRODUCTO, P.IMAGEN, C.* FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS  P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS C ON CP.ID_COMPRA_FK = C.ID_COMPRA INNER JOIN USUARIOS  U ON C.ID_USUARIO_FK = U.IDENTIFICACION WHERE U.IDENTIFICACION= ?', [user_db![0]['IDENTIFICACION']]);
         if (compras == null || compras.length == 0 || user_db==null) {
             res.json([]);
         } else {
             const map_compras = compras.map((p) => {
                 let compra: any = {
-                    id_compras_productos: p['ID_COMPRAS_PRODUCTOS'],
                     id_compra: p['ID_COMPRA_FK'],
                     id_producto_fk: p['ID_PRODUCTO_FK'],
                     valor_unidad: p['VALOR_UNIDAD'],
@@ -71,7 +69,6 @@ class ListComprasController {
                     direccion: p['DIRECCION'],
                     estado: p['ESTADO_COMPRAS'],
                     metodo_pago: p['METODOPAGO'],
-                    identificacion: user_db[0]['IDENTIFICACION']
                 }
                 return compra
             });

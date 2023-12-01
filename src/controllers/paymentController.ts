@@ -2,13 +2,8 @@ import { Request, Response } from 'express';
 import mercadopago = require("mercadopago")
 import jwt from 'jsonwebtoken';
 import { transporter } from './configEmail';
-import { listProductsController } from './listProductsController';
-import { stringify } from 'uuid';
-import { Product } from '../models/product';
-import { query } from '../dataBaseConfigMYSQL';
 import { uuid } from 'uuidv4';
-
-
+import { query } from '../dataBaseConfigMYSQL';
 
 class Paymentontroller {
     public async createOrder(req: Request, res: Response) {
@@ -39,14 +34,18 @@ class Paymentontroller {
         mercadopago.configure({
             access_token: mercadopagoAccessToken
         });
+
+        console.log('item');
+        console.log(item);
+
         const result = await mercadopago.preferences.create({
             items: item,
             back_urls: {
                 success: "http://localhost:4200/success",
                 failure: "http://localhost:4200/failure",
-                pending: "http://localhost:3000/pending"
+                pending: "https://api-jolie-jolie.onrender.com/pending"
             },
-            notification_url: "https://2716-2800-e2-1380-215b-c5bd-93d6-1d5c-8894.ngrok.io/webhook",
+            notification_url: "https://api-jolie-jolie.onrender.com/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
@@ -55,8 +54,7 @@ class Paymentontroller {
                 }
             },
         });
-        console.log('result.body ---- createOrder')
-        console.log(result.body)
+
         res.send(result.body)
     }
     public async getWebhook(req: Request, res: Response) {
@@ -73,8 +71,8 @@ class Paymentontroller {
 
                     if (data.body.status === "approved") {
 
-                        await query(
-                            `UPDATE COMPRAS SET ESTADO = ?, METODOPAGO = ? WHERE ID_USUARIO_FK = ?`,
+                        const createCompra = await query(
+                            `UPDATE COMPRAS SET ESTADO_COMPRAS = ?, METODOPAGO = ? WHERE ID_USUARIO_FK = ?`,
                             [1, data.body.payment_method.type, data.body.payer.identification.number],
                         );
 
@@ -107,9 +105,6 @@ class Paymentontroller {
                                 '<p class="lead">Muchas gracias por tu compra</p>' +
                                 '<p class="lead"><strong>El equipo de JOLIE JOLIE</strong></p>',
                         });
-
-                        console.log('data.body ----- getWebhook');
-                        console.log(data.body);
 
                     }
 
@@ -146,6 +141,10 @@ class Paymentontroller {
     public async createCompra(req: Request, res: Response) {
         let id_compra = Paymentontroller.generarNuevoIdCompra();
         id_compra = id_compra.replace(/\./g, '');
+
+        console.warn('id_compra');
+        console.warn(id_compra);
+
         const fechaOriginal = new Date();
         const año = fechaOriginal.getFullYear();
         const mes = (fechaOriginal.getMonth() + 1).toString().padStart(2, '0');
@@ -155,9 +154,6 @@ class Paymentontroller {
         const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, ID_USUARIO_FK, ID_ZONA_FK,METODOPAGO) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?)',
             [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodo_pago]
         );
-
-        console.log('id_compra');
-        console.log(id_compra);
 
         res.json({
             id_compra: id_compra,
@@ -194,10 +190,10 @@ class Paymentontroller {
 
     private static generarNuevoIdCompra(): string {
         const myUUID: string = uuid();
-        let result="";
+        let result = "";
         const uuidWithoutLetters: string = myUUID.replace(/\D/g, '');
-        for(var i =0;i<8;i++){
-            result=result+uuidWithoutLetters[i]
+        for (var i = 0; i < 9; i++) {
+            result = result + uuidWithoutLetters[i]
         }
         return result;
     }
