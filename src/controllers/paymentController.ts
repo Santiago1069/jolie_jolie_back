@@ -46,9 +46,9 @@ class Paymentontroller {
             back_urls: {
                 success: "http://localhost:4200/success",
                 failure: "http://localhost:4200/failure",
-                pending: "http://localhost:3000/pending"
+                pending: "https://api-jolie-jolie.onrender.com/pending"
             },
-            notification_url: "https://5215-38-156-230-108.ngrok-free.app/webhook",
+            notification_url: "https://api-jolie-jolie.onrender.com//webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
