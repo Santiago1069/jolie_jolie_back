@@ -153,7 +153,7 @@ class Paymentontroller {
 
         const fechaFormateada = `${año}-${mes}-${día}`
         const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, ID_USUARIO_FK, ID_ZONA_FK,METODOPAGO) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?)',
-            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodo_pago]
+            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodopago]
         );
 
         res.json({
