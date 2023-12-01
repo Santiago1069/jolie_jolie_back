@@ -48,7 +48,7 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "http://localhost:3000/pending"
             },
-            notification_url: "https://0ca3-38-156-230-108.ngrok-free.app/webhook",
+            notification_url: "https://5215-38-156-230-108.ngrok-free.app/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
