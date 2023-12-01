@@ -117,6 +117,7 @@ class ListProductsController {
 
     public async allProductsCardfunsion(identificacion: String) {
         await this.esperarDosSegundoAsync();
+        console.log('id',identificacion);
         const venta = await query('SELECT ID_COMPRA FROM COMPRAS WHERE ID_USUARIO_FK = ? AND ESTADO_COMPRAS = ?', [identificacion, 0]);
         const products = await query('SELECT P.*, C.CANTIDAD, C.VALOR_UNIDAD FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.ID_COMPRA_FK = ?', [venta![0]['ID_COMPRA']]);
         if (products == null || products.length == 0) {
