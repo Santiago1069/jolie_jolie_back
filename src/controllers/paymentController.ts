@@ -2,13 +2,8 @@ import { Request, Response } from 'express';
 import mercadopago = require("mercadopago")
 import jwt from 'jsonwebtoken';
 import { transporter } from './configEmail';
-import { listProductsController } from './listProductsController';
-import { stringify } from 'uuid';
-import { Product } from '../models/product';
-import { query } from '../dataBaseConfig';
 import { uuid } from 'uuidv4';
-
-
+import { query } from '../dataBaseConfigMYSQL';
 
 class Paymentontroller {
     public async createOrder(req: Request, res: Response) {
@@ -39,14 +34,18 @@ class Paymentontroller {
         mercadopago.configure({
             access_token: mercadopagoAccessToken
         });
+
+        console.log('item');
+        console.log(item);
+
         const result = await mercadopago.preferences.create({
             items: item,
             back_urls: {
                 success: "http://localhost:4200/success",
                 failure: "http://localhost:4200/failure",
-                pending: "http://localhost:3000/pending"
+                pending: "https://api-jolie-jolie.onrender.com/pending"
             },
-            notification_url: "https://3f83-38-156-230-108.ngrok-free.app/webhook",
+            notification_url: "https://api-jolie-jolie.onrender.com/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
@@ -55,8 +54,7 @@ class Paymentontroller {
                 }
             },
         });
-        console.log('result.body ---- createOrder')
-        console.log(result.body)
+
         res.send(result.body)
     }
     public async getWebhook(req: Request, res: Response) {
@@ -74,7 +72,7 @@ class Paymentontroller {
                     if (data.body.status === "approved") {
 
                         const createCompra = await query(
-                            `UPDATE COMPRAS SET ESTADO = :0, METODOPAGO = :1 WHERE ID_USUARIO_FK = :2`,
+                            `UPDATE COMPRAS SET ESTADO_COMPRAS = ?, METODOPAGO = ? WHERE ID_USUARIO_FK = ?`,
                             [1, data.body.payment_method.type, data.body.payer.identification.number],
                         );
 
@@ -96,7 +94,7 @@ class Paymentontroller {
                                 '</div>';
                         }
 
-                        let info = await transporter.sendMail({
+                        await transporter.sendMail({
                             from: '"Jolie Jolie 🛍️"',
                             to: /* data.body.payer.email */ 'santiago_sandoval23201@elpoli.edu.co',
                             subject: "Compra en la tienda JOLIE JOLIE 💰",
@@ -107,9 +105,6 @@ class Paymentontroller {
                                 '<p class="lead">Muchas gracias por tu compra</p>' +
                                 '<p class="lead"><strong>El equipo de JOLIE JOLIE</strong></p>',
                         });
-
-                        console.log('data.body ----- getWebhook');
-                        console.log(data.body);
 
                     }
 
@@ -146,20 +141,19 @@ class Paymentontroller {
     public async createCompra(req: Request, res: Response) {
         let id_compra = Paymentontroller.generarNuevoIdCompra();
         id_compra = id_compra.replace(/\./g, '');
+
+        console.warn('id_compra');
+        console.warn(id_compra);
+
         const fechaOriginal = new Date();
         const año = fechaOriginal.getFullYear();
         const mes = (fechaOriginal.getMonth() + 1).toString().padStart(2, '0');
         const día = fechaOriginal.getDate().toString().padStart(2, '0');
 
         const fechaFormateada = `${año}-${mes}-${día}`
-
-        const createCompra = await query(
-            `INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO, VALOR_TOTAL, CANTIDAD_PRODUCTOS, ID_USUARIO_FK, ID_ZONA_FK, METODOPAGO) VALUES (:0, TO_DATE(:1, 'YYYY - MM - DD'), :2, :3, :4, :5, :6, :7, :8)`,
-            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.cantidad_productos, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodopago]
+        const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, ID_USUARIO_FK, ID_ZONA_FK,METODOPAGO) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?)',
+            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodo_pago]
         );
-
-        console.log('id_compra');
-        console.log(id_compra);
 
         res.json({
             id_compra: id_compra,
@@ -182,7 +176,7 @@ class Paymentontroller {
             let id_compra_productos = Math.floor(Math.random() * 2000000)
             let valor_total = req.body[i].quantityProducts * req.body[i].price;
             const createCompraProducts = await query(
-                `INSERT INTO COMPRAS_PRODUCTOS (ID_COMPRAS_PRODUCTOS, ID_COMPRA_FK, ID_PRODUCTO_FK, CANTIDAD, VALOR_UNIDAD, VALOR_TOTAL) VALUES (:0, :1, :2, :3, :4, :5)`,
+                `INSERT INTO COMPRAS_PRODUCTOS (ID_COMPRAS_PRODUCTOS, ID_COMPRA_FK, ID_PRODUCTO_FK, CANTIDAD, VALOR_UNIDAD, VALOR_TOTAL) VALUES (?, ?, ?, ?, ?, ?)`,
                 [id_compra_productos, id_compra, req.body[i].id_producto, req.body[i].quantityProducts, req.body[i].price, valor_total]
             )
             id_compra_productos = 0;
@@ -196,8 +190,12 @@ class Paymentontroller {
 
     private static generarNuevoIdCompra(): string {
         const myUUID: string = uuid();
+        let result = "";
         const uuidWithoutLetters: string = myUUID.replace(/\D/g, '');
-        return uuidWithoutLetters;
+        for (var i = 0; i < 9; i++) {
+            result = result + uuidWithoutLetters[i]
+        }
+        return result;
     }
 
     public static getPayloadToken(req: Request): any {
