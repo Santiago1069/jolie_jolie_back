@@ -26,6 +26,7 @@ export async function query(queryString: string, binds: any[] = []) {
   }
   let result: oracledb.Result<any>;
   try {
+    console.log(binds,"--bins------------------------------------")
     result = await connection.execute(queryString, binds);
     await connection.commit()
     console.log('Consulta ejecutada correctamente');

@@ -87,7 +87,6 @@ class ListProductsController {
     public async allProductscard(req: Request, res: Response) {
         const { identificacion } = req.body;
         const carrito = await this.allProductsCardfunsion(identificacion);
-        res.json(carrito)
     }
 
     public async allProductsVentas() {
@@ -137,7 +136,7 @@ class ListProductsController {
                 }
                 return product
             });
-            return map_products;
+
         }
     }
 

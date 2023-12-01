@@ -222,7 +222,7 @@ class UsersController {
             id_tipo_documento_fk: user_db![0]['ID_TIPO_DOCUMENTO_FK']
         }
 
-        const validar_password = await bcrypt.compare(password_actual, user_db![0][3])
+        const validar_password = await bcrypt.compare(password_actual, user_db![0]['PASSWORD'])
 
         if (!validar_password) {
             return res.status(400).json({

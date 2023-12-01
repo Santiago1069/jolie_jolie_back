@@ -2,11 +2,8 @@ import { Request, Response } from 'express';
 import mercadopago = require("mercadopago")
 import jwt from 'jsonwebtoken';
 import { transporter } from './configEmail';
-import { listProductsController } from './listProductsController';
 import { uuid } from 'uuidv4';
 import { query } from '../dataBaseConfigMYSQL';
-
-
 
 class Paymentontroller {
     public async createOrder(req: Request, res: Response) {
@@ -48,7 +45,7 @@ class Paymentontroller {
                 failure: "http://localhost:4200/failure",
                 pending: "https://api-jolie-jolie.onrender.com/pending"
             },
-            notification_url: "https://api-jolie-jolie.onrender.com//webhook",
+            notification_url: "https://api-jolie-jolie.onrender.com/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
@@ -97,7 +94,7 @@ class Paymentontroller {
                                 '</div>';
                         }
 
-                        let info = await transporter.sendMail({
+                        await transporter.sendMail({
                             from: '"Jolie Jolie 🛍️"',
                             to: /* data.body.payer.email */ 'santiago_sandoval23201@elpoli.edu.co',
                             subject: "Compra en la tienda JOLIE JOLIE 💰",
@@ -154,10 +151,8 @@ class Paymentontroller {
         const día = fechaOriginal.getDate().toString().padStart(2, '0');
 
         const fechaFormateada = `${año}-${mes}-${día}`
-
-        const createCompra = await query(
-            `INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, CANTIDAD_PRODUCTOS, ID_USUARIO_FK, ID_ZONA_FK, METODOPAGO) VALUES (?, STR_TO_DATE(?, '%Y-%m-%d'), ?, ?, ?, ?, ?, ?, ?)`,
-            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.cantidad_productos, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodopago]
+        const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, ID_USUARIO_FK, ID_ZONA_FK,METODOPAGO) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?)',
+            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodo_pago]
         );
 
         res.json({

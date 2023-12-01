@@ -1,4 +1,3 @@
-import mysql from 'mysql2';
 require('dotenv').config;
 
 export const DATABASE_USER=process.env.DATABASE_USER || 'JOLIE_JOLIE'
