@@ -97,7 +97,7 @@ class ManagementProductsController {
         } else {
             const map_categories = categories.map((p) => {
                 let categorie: Categories = {
-                    id_categoria: p['ID_CATEGORIA_FK'],
+                    id_categoria: p['ID_CATEGORIA'],
                     categoria_descripcion: p['DESCRIPCION_CATEGORIA']
                 }
                 return categorie
