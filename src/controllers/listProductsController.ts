@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import { query } from '../dataBaseConfigMYSQL';
 import { Product } from '../models/product'
+import { Product } from 'src/app/models/Product';
 
 
 class ListProductsController {
@@ -35,7 +36,6 @@ class ListProductsController {
 
     public async allProductsActivate(req: Request, res: Response) {
 
-        const estado = 'Activo';
         const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO_PRODUCTO = ?', [1]);
 
         if (products == null || products.length == 0) {
@@ -113,7 +113,37 @@ class ListProductsController {
         }
 
     }
+    public async cantidaProdVend(req: Request, res: Response) {
+        const {fechainicio}=req.params
+        const {fechafin}=req.params
+        var products;
+        if(!fechafin || !fechainicio){
+         products = await query("SELECT P.NOMBRE_PRODUCTO,SUM(CP.cantidad) AS CANTIDAD_VENDIDA FROM `COMPRAS_PRODUCTOS` CP inner join `COMPRAS` C on id_compra_fk=id_compra INNER join `PRODUCTOS` P on id_producto_fk=id_producto  WHERE C.`FECHA` BETWEEN '2023-12-08' AND '2023-12-11'  GROUP BY P.`NOMBRE_PRODUCTO` ORDER BY SUM(CP.`CANTIDAD`) DESC");
+        }else{
+          products = await query("SELECT P.NOMBRE_PRODUCTO,SUM(CP.cantidad) AS CANTIDAD_VENDIDA FROM `COMPRAS_PRODUCTOS` CP inner join `COMPRAS` C on id_compra_fk=id_compra INNER join `PRODUCTOS` P on id_producto_fk=id_producto GROUP BY P.`NOMBRE_PRODUCTO` ORDER BY SUM(CP.`CANTIDAD`) DESC");
+        }
 
+        if (products == null || products.length == 0) {
+            res.json([]);
+        } else {
+            const map_products = products.map((p) => {
+                let product: Product = {
+                    id_producto: p['ID_PRODUCTO'],
+                    nombre_producto: p['NOMBRE_PRODUCTO'],
+                    color: p['COLOR'],
+                    precio: p['PRECIO'],
+                    imagen: p['IMAGEN'],
+                    descripcion_producto: p['DESCRIPCION_PRODUCTO'],
+                    cantidad: p['CANTIDAD'],
+                    estado: p['ESTADO_PRODUCTO'],
+                    id_categoria: p['ID_CATEGORIA_FK']
+                }
+                return product
+            });
+
+            res.json(map_products)
+        }
+    }
 
     public async allProductsCardfunsion(identificacion: String) {
         await this.esperarDosSegundoAsync();

@@ -17,6 +17,8 @@ class ListProductsRoutes{
 
     this.router.get('/products', listProductsController.allProductsActivate);
 
+    this.router.post('/ranquin', listProductsController.cantidaProdVend);
+
     this.router.get('/productbyid', validateToken.validate, listProductsController.productobyid);
 
     this.router.post('/productsCard',listProductsController.allProductscard);
