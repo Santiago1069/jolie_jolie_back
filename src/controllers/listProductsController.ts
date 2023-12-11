@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 
 import { query } from '../dataBaseConfigMYSQL';
 import { Product } from '../models/product'
-import { Product } from 'src/app/models/Product';
 
 
 class ListProductsController {
