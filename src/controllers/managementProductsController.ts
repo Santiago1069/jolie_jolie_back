@@ -40,7 +40,7 @@ class ManagementProductsController {
 
     public async createProduct(req: Request, res: Response) {
 
-        const create_one_product = await query('INSERT INTO PRODUCTOS ( nombre_producto, color, precio, imagen, descripcion_producto, cantidad, estado, id_categoria_fk) VALUES (?,?,?,?,?,?,?,?) ', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria]);
+        const create_one_product = await query('INSERT INTO PRODUCTOS ( nombre_producto, color, precio, imagen, descripcion_producto, cantidad, ESTADO_PRODUCTO, id_categoria_fk) VALUES (?,?,?,?,?,?,?,?) ', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria]);
         res.json({
             nombre_producto: req.body.nombre_producto,
             color: req.body.color,
@@ -71,7 +71,7 @@ class ManagementProductsController {
 
         const { id } = req.params;
 
-        const update_product = await query('UPDATE PRODUCTOS SET nombre_producto = ?, color = ?, precio = ?, imagen = ?, descripcion_producto = ?, cantidad = ?, estado = ?, id_categoria_fk = ? WHERE ID_PRODUCTO = ?', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria, id]);
+        const update_product = await query('UPDATE PRODUCTOS SET nombre_producto = ?, color = ?, precio = ?, imagen = ?, descripcion_producto = ?, cantidad = ?, ESTADO_PRODUCTO = ?, id_categoria_fk = ? WHERE ID_PRODUCTO = ?', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria, id]);
 
 
         res.json({
