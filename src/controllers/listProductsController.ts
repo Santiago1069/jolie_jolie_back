@@ -117,7 +117,7 @@ class ListProductsController {
         const {fechainicio}=req.params
         const {fechafin}=req.params
         var products;
-        if(!fechafin || !fechainicio){
+        if(!fechafin && !fechainicio){
          products = await query("SELECT P.NOMBRE_PRODUCTO,SUM(CP.cantidad) AS CANTIDAD_VENDIDA FROM `COMPRAS_PRODUCTOS` CP inner join `COMPRAS` C on id_compra_fk=id_compra INNER join `PRODUCTOS` P on id_producto_fk=id_producto  WHERE C.`FECHA` BETWEEN '2023-12-08' AND '2023-12-11'  GROUP BY P.`NOMBRE_PRODUCTO` ORDER BY SUM(CP.`CANTIDAD`) DESC");
         }else{
           products = await query("SELECT P.NOMBRE_PRODUCTO,SUM(CP.cantidad) AS CANTIDAD_VENDIDA FROM `COMPRAS_PRODUCTOS` CP inner join `COMPRAS` C on id_compra_fk=id_compra INNER join `PRODUCTOS` P on id_producto_fk=id_producto GROUP BY P.`NOMBRE_PRODUCTO` ORDER BY SUM(CP.`CANTIDAD`) DESC");
