@@ -44,11 +44,11 @@ class Paymentontroller {
         const result = await mercadopago.preferences.create({
             items: item,
             back_urls: {
-                success: "http://localhost:4200/success",
-                failure: "http://localhost:4200/failure",
-                pending: "https://c3dnwtjj-4200.use2.devtunnels.ms/pending"
+                success: process.env.URL_FRONT +  "/success",
+                failure: process.env.URL_FRONT +  "/failure",
+                pending: process.env.URL_FRONT +  "/pending"
             },
-            notification_url: "https://c3dnwtjj-4200.use2.devtunnels.ms/webhook",
+            notification_url: process.env.URL_API + "/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
