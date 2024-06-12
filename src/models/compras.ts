@@ -7,6 +7,6 @@ export interface Compras {
     estado: string;
     valor_total: number;
     usuario: string;
-    metodopago: string;
+    metodopago: number;
     producto?:any[]
   }

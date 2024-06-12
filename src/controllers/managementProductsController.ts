@@ -12,9 +12,7 @@ class ManagementProductsController {
     public async getOneProduct(req: Request, res: Response): Promise<void> {
 
         const { id } = req.params;
-
-        const select_one_product = await query('SELECT PRODUCTOS.ID_PRODUCTO, PRODUCTOS.NOMBRE_PRODUCTO, PRODUCTOS.COLOR, PRODUCTOS.PRECIO, PRODUCTOS.IMAGEN, PRODUCTOS.DESCRIPCION_PRODUCTO, PRODUCTOS.CANTIDAD, PRODUCTOS.ESTADO, PRODUCTOS.ID_CATEGORIA_FK, CATEGORIAS.DESCRIPCION_CATEGORIA FROM PRODUCTOS INNER JOIN CATEGORIAS ON PRODUCTOS.ID_CATEGORIA_FK = CATEGORIAS.ID_CATEGORIA  WHERE ID_PRODUCTO = ?', [id]);
-
+        const select_one_product = await query('SELECT P.ID_PRODUCTO, P.NOMBRE_PRODUCTO, P.COLOR, P.PRECIO, P.IMAGEN, P.DESCRIPCION_PRODUCTO, P.CANTIDAD, P.ESTADO, P.ID_CATEGORIA_FK, C.DESCRIPCION_CATEGORIA FROM PRODUCTOS P INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA_FK = C.ID_CATEGORIA  WHERE P.ID_PRODUCTO = ?', [id]);
         if (select_one_product == null || select_one_product.length === 0 || select_one_product == undefined) {
             res.status(400).json({
                 msg: `no hay productos en la base de datos`
@@ -30,25 +28,19 @@ class ManagementProductsController {
                 imagen: select_one_product[0]['IMAGEN'],
                 descripcion_producto: select_one_product[0]['DESCRIPCION_PRODUCTO'],
                 cantidad: select_one_product[0]['CANTIDAD'],
-                estado: select_one_product[0]['ESTADO_PRODUCTO'],
+                estado: select_one_product[0]['ESTADO'],
                 id_categoria: select_one_product[0]['ID_CATEGORIA_FK'],
                 descripcion_categoria: select_one_product[0]['DESCRIPCION_CATEGORIA']
             }
 
             res.json(product)
         }
-
-
-
     }
 
 
     public async createProduct(req: Request, res: Response) {
 
         const create_one_product = await query('INSERT INTO PRODUCTOS ( nombre_producto, color, precio, imagen, descripcion_producto, cantidad, estado, id_categoria_fk) VALUES (?,?,?,?,?,?,?,?) ', [req.body.nombre_producto, req.body.color, req.body.precio, req.body.imagen, req.body.descripcion_producto, req.body.cantidad, req.body.estado, req.body.id_categoria]);
-
-
-
         res.json({
             nombre_producto: req.body.nombre_producto,
             color: req.body.color,

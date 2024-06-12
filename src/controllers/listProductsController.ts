@@ -12,9 +12,9 @@ class ListProductsController {
 
         if (products == null || products.length == 0) {
             res.json([]);
-        } else{
+        } else {
             const map_products = products.map((p) => {
-                let product : Product = {
+                let product: Product = {
                     id_producto: p['ID_PRODUCTO'],
                     nombre_producto: p['NOMBRE_PRODUCTO'],
                     color: p['COLOR'],
@@ -22,7 +22,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -36,13 +36,13 @@ class ListProductsController {
     public async allProductsActivate(req: Request, res: Response) {
 
         const estado = 'Activo';
-        const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO_PRODUCTO = ?', [1]);
+        const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO = ?', [1]);
 
         if (products == null || products.length == 0) {
             res.json([]);
-        } else{
-            const map_products = products.map((p:any) => {
-                let product : Product = {
+        } else {
+            const map_products = products.map((p: any) => {
+                let product: Product = {
                     id_producto: p['ID_PRODUCTO'],
                     nombre_producto: p['NOMBRE_PRODUCTO'],
                     color: p['COLOR'],
@@ -50,7 +50,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -70,7 +70,7 @@ class ListProductsController {
                 msg: `El usuario NO existe en la base de datos`
             });
         } else {
-            let product : Product = {
+            let product: Product = {
                 id_producto: select_one_producto![0]['ID_PRODUCTO'],
                 nombre_producto: select_one_producto![0]['NOMBRE_PRODUCTO'],
                 color: select_one_producto![0]['COLOR'],
@@ -78,49 +78,25 @@ class ListProductsController {
                 imagen: select_one_producto![0]['IMAGEN'],
                 descripcion_producto: select_one_producto![0]['DESCRIPCION_PRODUCTO'],
                 cantidad: select_one_producto![0]['CANTIDAD'],
-                estado: select_one_producto![0]['ESTADO_PRODUCTO'],
+                estado: select_one_producto![0]['ESTADO'],
                 id_categoria: select_one_producto![0]['ID_CATEGORIA_FK']
             }
             res.json(product)
         }
     }
     public async allProductscard(req: Request, res: Response) {
-        const {identificacion} = req.body;
-        const carrito=await this.allProductsCardfunsion(identificacion);
-            res.json(carrito)
-    }
-    public async allProductsCardfunsion(identificacion:String) {
-        const venta = await query('select id_compra from compras where id_usuario_fk= ? and estado=?',[identificacion,0]);
-        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = ? ', [venta![0][0]]);
-        if (products == null || products.length == 0) {
-            return []
-        } else{
-            const map_products = products.map((p:any) => {
-                let product : Product = {
-                    id_producto: p['ID_PRODUCTO'],
-                    nombre_producto: p['NOMBRE_PRODUCTO'],
-                    color: p['COLOR'],
-                    precio: p['PRECIO'],
-                    imagen: p['IMAGEN'],
-                    descripcion_producto: p['DESCRIPCION_PRODUCTO'],
-                    cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
-                    id_categoria: p['ID_CATEGORIA_FK']
-                }
-                return product
-            });
-            return map_products;
-        }
+        const { identificacion } = req.body;
+        const carrito = await this.allProductsCardfunsion(identificacion);
     }
 
     public async allProductsVentas() {
         const products = await query("SELECT CP.ID_COMPRA_FK,P.*,CP.cantidad AS CANTIDAD_VENDIDA,CP.valor_unidad AS VALOR_UNIDAD FROM COMPRAS_PRODUCTOS CP INNER JOIN PRODUCTOS P ON CP.ID_PRODUCTO_FK = P.ID_PRODUCTO INNER JOIN COMPRAS C ON C.id_compra=CP.id_compra_fk  WHERE C.ESTADO_COMPRAS=1");
         if (products == null || products.length == 0) {
             return []
-        } else{
-            const map_products = products.map((p:any) => {
-                let product  = {
-                    id_compra:p['ID_COMPRA_FK'],    
+        } else {
+            const map_products = products.map((p: any) => {
+                let product = {
+                    id_compra: p['ID_COMPRA_FK'],
                     id_producto: p['ID_PRODUCTO'],
                     nombre_producto: p['NOMBRE_PRODUCTO'],
                     color: p['COLOR'],
@@ -128,7 +104,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD_VENDIDA'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -140,35 +116,37 @@ class ListProductsController {
 
 
     public async allProductsCardfunsion(identificacion: String) {
-        await this.esperarUnSegundoAsync();
-        const venta = await query('select id_compra from compras where id_usuario_fk= :0 and estado=:1', [identificacion, 0]);
-        const products = await query('SELECT P.*,c.cantidad,c.valor_unidad FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.id_compra_fk = :0 ', [venta![0][0]]);
+        await this.esperarDosSegundoAsync();
+        const venta = await query('SELECT ID_COMPRA FROM COMPRAS WHERE ID_USUARIO_FK = ? AND ESTADO_COMPRAS = ?', [identificacion, 0]);
+        const products = await query('SELECT P.*, C.CANTIDAD, C.VALOR_UNIDAD FROM COMPRAS_PRODUCTOS C INNER JOIN PRODUCTOS P ON C.ID_PRODUCTO_FK = P.ID_PRODUCTO WHERE C.ID_COMPRA_FK = ?', [venta![0]['ID_COMPRA']]);
         if (products == null || products.length == 0) {
             return []
         } else {
             const map_products = products.map((p) => {
                 let product: Product = {
-                    id_producto: p[0],
-                    nombre_producto: p[1],
-                    color: p[2],
-                    precio: p[10],
-                    imagen: p[4],
-                    descripcion_producto: p[5],
-                    cantidad: p[9],
-                    estado: p[7],
-                    id_categoria: p[8]
+                    id_producto: p['ID_PRODUCTO'],
+                    nombre_producto: p['NOMBRE_PRODUCTO'],
+                    color: p['COLOR'],
+                    precio: p['PRECIO'],
+                    imagen: p['IMAGEN'],
+                    descripcion_producto: p['DESCRIPCION_PRODUCTO'],
+                    cantidad: p['CANTIDAD'],
+                    estado: p['ESTADO'],
+                    id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
             });
-            return map_products;
+
+            return map_products
+
         }
     }
 
-    public async esperarUnSegundoAsync(): Promise<void> {
+    public async esperarDosSegundoAsync(): Promise<void> {
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve();
-            }, 1000);
+            }, 2000);
         });
     }
 

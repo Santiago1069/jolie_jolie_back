@@ -6,7 +6,7 @@ export const pool: Pool = createPool({
   user: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME,
-  port: 52818
+  port: 45572
 });
 
 export async function query(queryString: string, binds: any[] = []): Promise<any[] | null> {
