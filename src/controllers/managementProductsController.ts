@@ -12,7 +12,7 @@ class ManagementProductsController {
     public async getOneProduct(req: Request, res: Response): Promise<void> {
 
         const { id } = req.params;
-        const select_one_product = await query('SELECT P.ID_PRODUCTO, P.NOMBRE_PRODUCTO, P.COLOR, P.PRECIO, P.IMAGEN, P.DESCRIPCION_PRODUCTO, P.CANTIDAD, P.ESTADO_PRODUCTO, P.ID_CATEGORIA_FK, C.DESCRIPCION_CATEGORIA FROM PRODUCTOS P INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA_FK = C.ID_CATEGORIA  WHERE P.ID_PRODUCTO = ?', [id]);
+        const select_one_product = await query('SELECT P.ID_PRODUCTO, P.NOMBRE_PRODUCTO, P.COLOR, P.PRECIO, P.IMAGEN, P.DESCRIPCION_PRODUCTO, P.CANTIDAD, P.ESTADO, P.ID_CATEGORIA_FK, C.DESCRIPCION_CATEGORIA FROM PRODUCTOS P INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA_FK = C.ID_CATEGORIA  WHERE P.ID_PRODUCTO = ?', [id]);
         if (select_one_product == null || select_one_product.length === 0 || select_one_product == undefined) {
             res.status(400).json({
                 msg: `no hay productos en la base de datos`
@@ -28,7 +28,7 @@ class ManagementProductsController {
                 imagen: select_one_product[0]['IMAGEN'],
                 descripcion_producto: select_one_product[0]['DESCRIPCION_PRODUCTO'],
                 cantidad: select_one_product[0]['CANTIDAD'],
-                estado: select_one_product[0]['ESTADO_PRODUCTO'],
+                estado: select_one_product[0]['ESTADO'],
                 id_categoria: select_one_product[0]['ID_CATEGORIA_FK'],
                 descripcion_categoria: select_one_product[0]['DESCRIPCION_CATEGORIA']
             }

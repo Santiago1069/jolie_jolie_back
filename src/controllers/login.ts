@@ -18,7 +18,7 @@ class LoginController {
 
         if (user_no_existe == null || user_no_existe.length == 0) {
 
-            const new_user = await query('INSERT INTO USUARIOS (IDENTIFICACION, NOMBRE, CORREO, PASSWORD, CELULAR, ID_PERFILES_FK, ID_TIPO_DOCUMENTO_FK) VALUES (?, ?, ?, ?, ?, ?, ?)', [req.body.identificacion, req.body.nombre, req.body.correo, password_encriptada, req.body.celular, 2, req.body.id_tipo_documento_fk]);
+            const new_user = await query('INSERT INTO USUARIOS (IDENTIFICACION, NOMBRE, CORREO, PASSWORD, CELULAR, ID_PERFILES_FK, ID_TIPO_DOCUMENTO_FK) VALUES (?, ?, ?, ?, ?, ?, ?)', [req.body.identificacion, req.body.nombre, req.body.correo, password_encriptada, req.body.celular, 2, 1]);
 
 
             res.json({
@@ -42,7 +42,7 @@ class LoginController {
 
         //Validamo si el usuario existe en la base de datos
         const user_existe:any = await query('SELECT * FROM USUARIOS WHERE CORREO = ?',[correo]);
-        console.log(user_existe.length,correo,password)
+        
         if (user_existe[0]['IDENTIFICACION'] == undefined || user_existe.length < 1) {
             res.status(400).json({
                 msg: `El correo o la contraseña son incorrectas`

@@ -22,7 +22,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -36,7 +36,7 @@ class ListProductsController {
     public async allProductsActivate(req: Request, res: Response) {
 
         const estado = 'Activo';
-        const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO_PRODUCTO = ?', [1]);
+        const products = await query('SELECT * FROM PRODUCTOS WHERE ESTADO = ?', [1]);
 
         if (products == null || products.length == 0) {
             res.json([]);
@@ -50,7 +50,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -78,7 +78,7 @@ class ListProductsController {
                 imagen: select_one_producto![0]['IMAGEN'],
                 descripcion_producto: select_one_producto![0]['DESCRIPCION_PRODUCTO'],
                 cantidad: select_one_producto![0]['CANTIDAD'],
-                estado: select_one_producto![0]['ESTADO_PRODUCTO'],
+                estado: select_one_producto![0]['ESTADO'],
                 id_categoria: select_one_producto![0]['ID_CATEGORIA_FK']
             }
             res.json(product)
@@ -104,7 +104,7 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD_VENDIDA'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
@@ -131,11 +131,13 @@ class ListProductsController {
                     imagen: p['IMAGEN'],
                     descripcion_producto: p['DESCRIPCION_PRODUCTO'],
                     cantidad: p['CANTIDAD'],
-                    estado: p['ESTADO_PRODUCTO'],
+                    estado: p['ESTADO'],
                     id_categoria: p['ID_CATEGORIA_FK']
                 }
                 return product
             });
+
+            return map_products
 
         }
     }

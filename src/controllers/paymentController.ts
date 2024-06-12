@@ -4,10 +4,13 @@ import jwt from 'jsonwebtoken';
 import { transporter } from './configEmail';
 import { uuid } from 'uuidv4';
 import { query } from '../dataBaseConfigMYSQL';
+import { listProductsController } from './listProductsController';
 
 class Paymentontroller {
     public async createOrder(req: Request, res: Response) {
         const payload = Paymentontroller.getPayloadToken(req);
+        console.log('payload!.identificacion');
+        console.log(payload!.identificacion);
         var carrito = await listProductsController.allProductsCardfunsion(payload!.identificacion);
         var item: Array<any> = [];
         if (!carrito) {
@@ -17,11 +20,11 @@ class Paymentontroller {
         } else {
             for (let i = 0; i < carrito.length; i++) {
                 item.push({
-                    title: carrito[i].nombre_producto,
-                    unit_price: carrito[i].precio,
+                    title: carrito[i]['nombre_producto'],
+                    unit_price: carrito[i]['precio'],
                     currency_id: "COP",
-                    quantity: carrito[i].cantidad,
-                    picture_url: carrito[i].imagen
+                    quantity: carrito[i]['cantidad'],
+                    picture_url: carrito[i]['imagen']
                 })
 
             }
@@ -43,9 +46,9 @@ class Paymentontroller {
             back_urls: {
                 success: "http://localhost:4200/success",
                 failure: "http://localhost:4200/failure",
-                pending: "https://api-jolie-jolie.onrender.com/pending"
+                pending: "https://c3dnwtjj-4200.use2.devtunnels.ms/pending"
             },
-            notification_url: "https://api-jolie-jolie.onrender.com/webhook",
+            notification_url: "https://c3dnwtjj-4200.use2.devtunnels.ms/webhook",
             payer: {
                 email: payload!.correo,
                 identification: {
@@ -132,6 +135,7 @@ class Paymentontroller {
     }
 
     public async failureCompra(req: Request, res: Response) {
+        
         res.json({
             msg: `La compra no se completo correctamente`
         })
@@ -151,8 +155,8 @@ class Paymentontroller {
         const día = fechaOriginal.getDate().toString().padStart(2, '0');
 
         const fechaFormateada = `${año}-${mes}-${día}`
-        const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, ID_USUARIO_FK, ID_ZONA_FK,METODOPAGO) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?)',
-            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodo_pago]
+        const createCompra = await query('INSERT INTO COMPRAS (ID_COMPRA, FECHA, DIRECCION, ESTADO_COMPRAS, VALOR_TOTAL, CANTIDAD_PRODUCTOS, ID_USUARIO_FK, ID_ZONA_FK, ID_METODOPAGO_FK) VALUES (?,STR_TO_DATE(?,"%Y-%m-%d"), ?, ?, ?, ?, ?, ?, ?)',
+            [id_compra, fechaFormateada, req.body.direccion, req.body.estado, req.body.valor_total, req.body.cantidad_productos, req.body.id_usuario_fk, req.body.id_zona_fk, req.body.metodopago]
         );
 
         res.json({

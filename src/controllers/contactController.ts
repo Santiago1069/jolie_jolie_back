@@ -11,8 +11,6 @@ class ContactController {
 
     public async createMensaje(req: Request, res: Response) {
 
-        const { asunto, mensaje } = req.body;
-
         const header_token = req.headers['authorization']
         const token = header_token!.slice(7);
 
@@ -27,11 +25,7 @@ class ContactController {
 
         const payload = jwt.verify(token, secret_key1 || secret_key2) as { [key: string]: any };
 
-        const user_db = await query('SELECT * FROM USUARIOS WHERE CORREO = ?', [payload.correo]);
-
-        const id_user = user_db![0]['IDENTIFICACION'];
-
-        const mensajeContactanos = await query('INSERT INTO CONTACTANOS (ASUNTO, MENSAJE, USER_ID) VALUES (?, ?, ?)', [req.body.asunto, req.body.mensaje, id_user]);
+        const mensajeContactanos = await query('INSERT INTO CONTACTANOS (ASUNTO, MENSAJE, USER_ID) VALUES (?, ?, ?)', [req.body.asunto, req.body.mensaje, payload!.identificacion]);
 
         res.status(200).json({});
 
